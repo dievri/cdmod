@@ -1,3 +1,7 @@
+local lfs = require 'lfs'
+dofile(minetest.get_modpath("cdmod") .. "/getvalue.lua")
+
+
 minetest.register_on_joinplayer(function(player)
 	player:set_pos({x = 10, y = 2, z = 0})
 	local rootdirectory = minetest.add_entity({x = 10, y = 2, z = 10}, "cdmod:directory")
@@ -21,7 +25,7 @@ minetest.register_tool("cdmod:enter", {
 
 })
 
-create_platform = function(parent_y) 
+create_platform = function(self, parent_y) 
     local glass= minetest.get_content_id("default:glass")
 	p1 = {x = 0, y = parent_y + 13, z = 0}
 	p2 = {x = 20, y = parent_y + 13, z = 20}
@@ -30,25 +34,57 @@ create_platform = function(parent_y)
 	local emin, emax = vm:read_from_map(p1, p2)
     local a = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
 	local data = vm:get_data()
-	
-	for z = p1.z, p2.z do
-		for y = p1.y, p2.y do
-			for x = p1.x, p2.x do
-				local vi = a:index(x, y, z)
-				data[vi] = glass
-			end
-		end
-	end
+	for i in a:iter(0, p1.y, 0, 19, p2.y, 19) do
+         data[i] = glass
+    end
     vm:set_data(data)
     vm:write_to_map(true)
+	
+	list_directory(self, parent_y)
 end
+
+list_directory = function(self, parent_y)
+-- make grid 20x20 initially fully empty
+    local grid = {} for i = 0, 19 do grid[i] = {}
+    for j = 0, 19 do  grid[i][j] = 0 end end
+
+    -- process file line by line and create entity with a given name in file on a random position 
+    local path = self.path
+    local fullpath = ""
+	if path == "" then path = "/" end
+	-- traverse all files at given path 
+    for file in lfs.dir(path) do 
+		if file ~= '.' and file ~= '..' and file ~= '/' then
+            local posx, posz = getvalue(grid, 19)
+            if path == "/" then fullpath = path .. file
+			else fullpath = path .. '/' .. file end
+			print(fullpath)
+            local attr = lfs.attributes(fullpath)
+            if attr.mode == "directory" then
+            	local entity = minetest.add_entity({x = posx,  y = math.random(parent_y + 15, parent_y + 23), z = posz}, "cdmod:directory")
+                entity:set_nametag_attributes({color = "black", text = file})
+                entity:set_armor_groups({immortal=0})
+				entity:get_luaentity().path = fullpath 
+			else
+				local entity = minetest.add_entity({x = posx,  y = math.random(parent_y + 15, parent_y + 23), z = posz}, "cdmod:file")
+                entity:set_nametag_attributes({color = "black", text = file})
+                entity:set_armor_groups({immortal=0})
+			end
+
+
+		end
+    end
+end
+
+
+
 
 
 -- register directory entity blueprint
 minetest.register_entity("cdmod:directory", {
 	initial_properties = 
 	 {
-        physical = false,
+        physical = true,
         pointable = true,
         visual = "sprite",
         textures = {"cdmod_folder.png"},
@@ -61,17 +97,52 @@ minetest.register_entity("cdmod:directory", {
         static_save = true,
         shaded = true,
     },
+		path = "",
 
 	on_punch = function (self, puncher, time_from_last_punch, tool_capabilities, dir)
 		local parent_y = self.object:get_pos().y
+		minetest.log(dump(self))
 		print(parent_y)
 		if tool_capabilities.damage_groups.enter == 1
 			then print('creating new platform')
 			puncher:set_pos({x = 10, y = parent_y + 15, z =  0})
-			create_platform(parent_y)			
+			create_platform(self, parent_y)			
 			end
+	end,
+	on_activate = function(self, staticdata, dtime_s) 
+		self.object:set_acceleration({x = 0, y = -10, z = 0})
 	end
+
 })
+
+
+-- register files entity blueprint
+minetest.register_entity("cdmod:file", {
+	initial_properties = 
+	 {
+        physical = true,
+        pointable = true,
+        visual = "sprite",
+        textures = {"cdmod_file.png"},
+        spritediv = {x = 1, y = 1},
+        initial_sprite_basepos = {x = 0, y = 0},
+        is_visible = true,
+        makes_footstep_sound = false,
+        nametag_color = "black",
+        infotext = "",
+        static_save = true,
+        shaded = true,
+    },
+	on_punch = function (self, puncher, time_from_last_punch, tool_capabilities, dir)
+		print("I'm a file")
+	end,
+	on_activate = function(self, staticdata, dtime_s) 
+		self.object:set_acceleration({x = 0, y = -10, z = 0})
+	end
+
+})
+
+
 
 
 -- create initial platform
@@ -87,7 +158,7 @@ local start_pos = {x=0, y=0, z=0} -- starting position of platform
 
     -- iterave over starting and ending positions of platform
     for i in area:iter(0, 0, 0,
-              20, 0, 20) do
+             	19, 0, 19) do
         -- set node
         local c_glass= minetest.get_content_id("default:glass")
         data[i] = c_glass
