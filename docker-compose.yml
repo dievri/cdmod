@@ -1,0 +1,7 @@
+version: "3"
+services:
+    server:
+        build: . 
+        ports:
+            - "30000:30000/udp"
+        command: ["--port", "30000"]
