@@ -5,5 +5,6 @@ services:
         ports:
             - "30000:30000/udp"
         volumes:
-            - "~/.minetest/mods:/root/.minetest/mods"
-        command: ["--worldname", "cdworld", "--port", "30000"]
+            - "/usr/share/games/minetest/games/minetest_game/mods:/usr/share/games/minetest/games/minetest_game/mods"
+            - "/etc/minetest/minetest.conf:/root/.minetest/minetest.conf"
+        command: ["--port", "30000"]
