@@ -11,8 +11,31 @@ minetest.register_on_joinplayer(function(player)
 	local inventory = player.get_inventory(player)	
 	--inventory:add_item("main", "cdmod:read")	
 	--inventory:add_item("main", "cdmod:enter")
+	--inventory:add_item("main", "cdmod:create")
 end)
 
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+	if formname == "cdmod:create_file" then 
+		if(fields["filename"] == nil) then return
+		end
+		print("Player "..player:get_player_name().." submitted fields "..dump(fields))
+		local level = tonumber(fields["platform_level"])
+		local fullpath = fields["path"] .. "/" .. fields["filename"]
+		local file = io.open(fullpath, "w")
+		file:close()
+		local nodemeta = minetest.get_meta({x = 0,y = level, z = 0})
+		local sl_grid = nodemeta:get_string("grid")
+		local grid = minetest.deserialize(sl_grid)
+		print(grid)
+		local posx, posz = getvalue(grid, 19)	
+	    local entity = minetest.add_entity({x = posx,  y = math.random(level + 2, level + 10), z = posz}, "cdmod:file")
+               entity:set_nametag_attributes({color = "black", text = fields["filename"]})
+               entity:set_armor_groups({immortal=0})
+               entity:get_luaentity().path = fullpath
+
+
+	end
+end)
 
 -- register enter key 
 minetest.register_tool("cdmod:enter", {
@@ -26,7 +49,7 @@ minetest.register_tool("cdmod:enter", {
 
 })
 
--- register enter key 
+-- register read file tool
 minetest.register_tool("cdmod:read", {
 	desription = "Read file",
 	inventory_image = "cdmod_read.png",
@@ -38,19 +61,65 @@ minetest.register_tool("cdmod:read", {
 
 })
 
+-- register create file tool 
+minetest.register_tool("cdmod:create", {
+	desription = "Create file",
+	inventory_image = "cdmod_create.png",
+	wield_image = "cdmod_create.png",
+	tool_capabilities = {
+		punch_attack_uses = 0
+	},
+	on_use = function(itemstack, player, pointed_thing) 
+		local pos = player:get_pos()
+		local player_name = player:get_player_name()
+		local nodenear = minetest.find_node_near(pos, 6, {"default:glass"})
+		local platform_level = nodenear.y
+		local meta = minetest.get_meta(nodenear)
+		local path = meta:get_string("path")
+		print(path)
+		local formspec = {
+                 "formspec_version[3]",
+                 "size[10,3,false]",
+				 "field[0,0;0,0;path;;", path, "]",
+				 "field[0,0;0,0;platform_level;;", platform_level, "]",
+				 "field[0.5,0.5;9,1;filename;Enter file name;]",
+				 "button_exit[7,1.8;2.5,0.9;create;create file]"
+             }
+             local form = table.concat(formspec, "")
 
-create_platform = function(self, parent_y) 
+              minetest.show_formspec(player_name, "cdmod:create_file", form)
+
+	end
+
+})
+
+
+create_platform = function(self, parent_y)
+	local path = self.object:get_luaentity().path
     local glass= minetest.get_content_id("default:glass")
-	p1 = {x = 0, y = parent_y + 13, z = 0}
-	p2 = {x = 20, y = parent_y + 13, z = 20}
+	min = {x = 0, y = parent_y + 13, z = 0}
+	max = {x = 19, y = parent_y + 13, z = 19}
 	
 	local vm = minetest.get_voxel_manip()
-	local emin, emax = vm:read_from_map(p1, p2)
+	local emin, emax = vm:read_from_map(min, max)
     local a = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
 	local data = vm:get_data()
-	for i in a:iter(0, p1.y, 0, 19, p2.y, 19) do
-         data[i] = glass
-    end
+
+	for z = min.z, max.z do
+    	for y = min.y, max.y do
+        	for x = min.x, max.x do
+            	-- vi, voxel index, is a common variable name here
+            	local vi = a:index(x, y, z)
+				data[vi] = glass
+				local nodemeta = minetest.get_meta({x = x,y = y, z = z})
+				nodemeta:set_string("path", path)
+        	end
+    	end
+	end
+
+	--for i in a:iter(0, p1.y, 0, 19, p2.y, 19) do
+    --     data[i] = glass
+    --end
     vm:set_data(data)
     vm:write_to_map(true)
 	
@@ -72,7 +141,6 @@ list_directory = function(self, parent_y)
             local posx, posz = getvalue(grid, 19)
             if path == "/" then fullpath = path .. file
 			else fullpath = path .. '/' .. file end
-			print(fullpath)
             local attr = lfs.attributes(fullpath)
             if attr.mode == "directory" then
             	local entity = minetest.add_entity({x = posx,  y = math.random(parent_y + 15, parent_y + 23), z = posz}, "cdmod:directory")
@@ -89,6 +157,11 @@ list_directory = function(self, parent_y)
 
 		end
     end
+	local rootnodemeta = minetest.get_meta({x = 0; y = parent_y + 13; z = 0})
+	local sl_grid = minetest.serialize(grid)
+	rootnodemeta:set_string("grid", sl_grid)
+	
+	
 end
 
 
@@ -117,9 +190,8 @@ minetest.register_entity("cdmod:directory", {
 	on_punch = function (self, puncher, time_from_last_punch, tool_capabilities, dir)
 		local parent_y = self.object:get_pos().y
 		minetest.log(dump(self))
-		print(parent_y)
 		if tool_capabilities.damage_groups.enter == 1
-			then print('creating new platform')
+			then 
 			puncher:set_pos({x = 10, y = parent_y + 15, z =  0})
 			create_platform(self, parent_y)			
 			end
@@ -184,19 +256,35 @@ local start_pos = {x=0, y=0, z=0} -- starting position of platform
     then
         local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
         local data = vm:get_data()
-        local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
-
-    -- iterave over starting and ending positions of platform
-    for i in area:iter(0, 0, 0,
-             	19, 0, 19) do
-        -- set node
+        local a = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
         local c_glass= minetest.get_content_id("default:glass")
-        data[i] = c_glass
-    end
-
+    	 min = {x = 0, y = 0, z = 0}
+    	 max = {x = 19, y = 0, z = 19}
+	
+		for z = min.z, max.z do
+         for y = min.y, max.y do
+             for x = min.x, max.x do
+        		local vi = a:index(x, y, z)
+				 data[vi] = c_glass
+                 local nodemeta = minetest.get_meta({x = x,y = y, z = z})
+                 nodemeta:set_string("path", "/tmp")
+             end
+         end
+     end
+	
     -- save data to map
     vm:set_data(data)
     vm:write_to_map()
-    end
+    end	
+
+	local  grid = {} for i = 0, 19 do grid[i] = {}
+           for j = 0, 19 do  grid[i][j] = 0 end end
+    grid[10][10] = nil
+
+	 local rootnodemeta = minetest.get_meta({x = 0; y = 0; z = 0})
+     local sl_grid = minetest.serialize(grid)
+     rootnodemeta:set_string("grid", sl_grid)
+
+
 end)
 

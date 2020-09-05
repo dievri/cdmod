@@ -1,6 +1,6 @@
 -- get coordinates of emply cell
 function getvalue (grd, size)
-    while (true)
+	while (true)
     do
         ::continue::
         local posx = math.random(1, size)
