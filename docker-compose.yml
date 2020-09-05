@@ -4,4 +4,6 @@ services:
         build: . 
         ports:
             - "30000:30000/udp"
-        command: ["--port", "30000"]
+        volumes:
+            - "~/.minetest/:/root/.minetest/:rw"
+        command: ["--worldname", "cdworld", "--port", "30000"]
