@@ -5,5 +5,5 @@ services:
         ports:
             - "30000:30000/udp"
         volumes:
-            - "~/.minetest/:/root/.minetest/:rw"
+            - "~/.minetest/mods:/root/.minetest/mods"
         command: ["--worldname", "cdworld", "--port", "30000"]
