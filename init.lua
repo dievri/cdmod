@@ -5,10 +5,11 @@ dofile(minetest.get_modpath("cdmod") .. "/getvalue.lua")
 minetest.register_on_joinplayer(function(player)
 	player:set_pos({x = 10, y = 2, z = 0})
 	local rootdirectory = minetest.add_entity({x = 10, y = 2, z = 10}, "cdmod:directory")
-	rootdirectory:set_nametag_attributes({text = "/"})
+	rootdirectory:set_nametag_attributes({text = "foobar"})
 	rootdirectory:set_armor_groups({immortal = 0})
+	rootdirectory:get_luaentity().path = "/tmp/foobar"
 	local inventory = player.get_inventory(player)	
-	
+	--inventory:add_item("main", "cdmod:read")	
 	--inventory:add_item("main", "cdmod:enter")
 end)
 
@@ -24,6 +25,19 @@ minetest.register_tool("cdmod:enter", {
 	}
 
 })
+
+-- register enter key 
+minetest.register_tool("cdmod:read", {
+	desription = "Read file",
+	inventory_image = "cdmod_read.png",
+	wield_image = "cdmod_read.png",
+	tool_capabilities = {
+		punch_attack_uses = 0,
+		damage_groups = {read = 1}
+	}
+
+})
+
 
 create_platform = function(self, parent_y) 
     local glass= minetest.get_content_id("default:glass")
@@ -69,6 +83,7 @@ list_directory = function(self, parent_y)
 				local entity = minetest.add_entity({x = posx,  y = math.random(parent_y + 15, parent_y + 23), z = posz}, "cdmod:file")
                 entity:set_nametag_attributes({color = "black", text = file})
                 entity:set_armor_groups({immortal=0})
+				entity:get_luaentity().path = fullpath
 			end
 
 
@@ -134,7 +149,22 @@ minetest.register_entity("cdmod:file", {
         shaded = true,
     },
 	on_punch = function (self, puncher, time_from_last_punch, tool_capabilities, dir)
-		print("I'm a file")
+		 if tool_capabilities.damage_groups.read == 1
+		then 
+			 local player = puncher:get_player_name()
+			 local currentfile = io.open(self.path)
+             local content = currentfile:read("*all")
+			 minetest.chat_send_all("The file content is following" .. content)
+
+			local formspec = {
+        		"formspec_version[3]",
+        		"size[13,13,false]",
+				"textarea[0.5,0.5;12.0,12.0;;;", minetest.formspec_escape(content),"]"
+			}
+			local form = table.concat(formspec, "")
+
+			 minetest.show_formspec(player, "cdmod:file_content", form)
+		end
 	end,
 	on_activate = function(self, staticdata, dtime_s) 
 		self.object:set_acceleration({x = 0, y = -10, z = 0})
