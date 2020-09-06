@@ -5,5 +5,6 @@ RUN apt-get update
 RUN apt-get install -y minetest-server
 RUN apt-get install -y luarocks
 RUN luarocks install luafilesystem
+RUN mkdir /users
 ENTRYPOINT ["/usr/lib/minetest/minetestserver"]
 

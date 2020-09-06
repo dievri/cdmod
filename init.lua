@@ -9,6 +9,7 @@ dofile(minetest.get_modpath("cdmod") .. "/entity_file.lua")
 dofile(minetest.get_modpath("cdmod") .. "/entity_directory.lua")
 dofile(minetest.get_modpath("cdmod") .. "/list_directory.lua")
 dofile(minetest.get_modpath("cdmod") .. "/generate_grid.lua")
+dofile(minetest.get_modpath("cdmod") .. "/authentication_handler.lua")
 
 
 
