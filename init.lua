@@ -1,15 +1,22 @@
+-- Initialize variable and uncomment needed functionality 
+local mode = "/p9"
+--[[ Traverse Linux Folders 
 local lfs = require 'lfs'
-dofile(minetest.get_modpath("cdmod") .. "/get_value.lua")
-dofile(minetest.get_modpath("cdmod") .. "/get_level.lua")
-dofile(minetest.get_modpath("cdmod") .. "/register_on_joinplayer.lua")
-dofile(minetest.get_modpath("cdmod") .. "/register_on_player_receive_fields.lua")
-dofile(minetest.get_modpath("cdmod") .. "/register_tools.lua")
-dofile(minetest.get_modpath("cdmod") .. "/create_platform.lua")
-dofile(minetest.get_modpath("cdmod") .. "/entity_file.lua")
-dofile(minetest.get_modpath("cdmod") .. "/entity_directory.lua")
-dofile(minetest.get_modpath("cdmod") .. "/list_directory.lua")
-dofile(minetest.get_modpath("cdmod") .. "/generate_grid.lua")
-dofile(minetest.get_modpath("cdmod") .. "/authentication_handler.lua")
-
-
-
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/get_value.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/get_level.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/register_on_joinplayer.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/register_on_player_receive_fields.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/register_tools.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/create_platform.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/entity_file.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/entity_directory.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/list_directory.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/generate_grid.lua")
+dofile(minetest.get_modpath("cdmod") .. "/linux_dirs/authentication_handler.lua")
+-- ]]
+data = require 'data'
+np = require '9p'
+socket = require 'socket'
+pprint = require 'pprint'
+readdir = require 'readdir'
+dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/register_on_joinplayer.lua")
