@@ -48,3 +48,15 @@ minetest.register_tool("cdmod:read", {
 		damage_groups = {read = 1}
 	}
 })
+
+
+-- register flip platform tool
+minetest.register_tool("cdmod:flip", {
+	desription = "Flip platform",
+	inventory_image = "cdmod_flip.png",
+	wield_image = "cdmod_flip.png",
+	tool_capabilities = {
+		punch_attack_uses = 0,
+		damage_groups = {flip = 1}
+	}
+})

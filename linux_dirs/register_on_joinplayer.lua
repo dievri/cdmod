@@ -13,4 +13,5 @@ minetest.register_on_joinplayer(function(player)
     inventory:add_item("main", "cdmod:read")	
 	inventory:add_item("main", "cdmod:enter")
 	inventory:add_item("main", "cdmod:create")
+	
 end)

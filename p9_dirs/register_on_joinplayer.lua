@@ -1,5 +1,5 @@
 minetest.register_on_joinplayer(function(player)
-    player:set_pos({x = 10, y = 2, z = 0})
+    player:set_pos({x = 0, y = 9, z = 0})
     local root_path = "./"
     local size = get_number_of_elements(root_path)
     create_platform(0, 10)
@@ -12,5 +12,9 @@ minetest.register_on_joinplayer(function(player)
 	local inventory = player.get_inventory(player)	
     inventory:add_item("main", "cdmod:read")	
 	inventory:add_item("main", "cdmod:enter")
-	inventory:add_item("main", "cdmod:create")
+    inventory:add_item("main", "cdmod:create")
+    inventory:add_item("main", "cdmod:flip")
+
+    create_relative_platform(5, 5, 5, 4)
+   
 end)
