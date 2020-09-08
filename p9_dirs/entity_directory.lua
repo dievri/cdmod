@@ -1,8 +1,8 @@
 -- register directory entity blueprint
 minetest.register_entity("cdmod:directory", {
 	initial_properties = {
-        physical = true, pointable = true, visual = "sprite", textures = {"cdmod_folder.png"},
-        spritediv = {x = 1, y = 1}, initial_sprite_basepos = {x = 0, y = 0},
+        physical = true, pointable = true, visual = "sprite", collide_with_objects = true,
+        textures = {"cdmod_folder.png"}, spritediv = {x = 1, y = 1}, initial_sprite_basepos = {x = 0, y = 0},
         is_visible = true, makes_footstep_sound = false, nametag_color = "black",
         infotext = "", static_save = true, shaded = true,
     },
@@ -31,7 +31,7 @@ minetest.register_entity("cdmod:directory", {
     end,
     -- make directory fall in air
 	on_activate = function(self, staticdata, dtime_s) 
-		self.object:set_acceleration({x = 0, y = -7, z = 0})
+		self.object:set_acceleration({x = 0, y = -3, z = 0})
 	end
 })
 

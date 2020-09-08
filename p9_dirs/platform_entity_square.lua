@@ -1,15 +1,15 @@
 -- register directory entity blueprint
-minetest.register_entity("cdmod:platform", {
+minetest.register_entity("cdmod:platform_glass", {
 	initial_properties = {
         physical = true, 
         pointable = true, 
         visual = "cube", 
-        textures = {"cdmod_github.png", 
-                    "cdmod_docker.png",
-                    "cdmod_k8s.png", 
-                    "cdmod_terra.png",
-                    "cdmod_ansible.png",
-                    "cdmod_jenkins.png" },
+        textures = {"default_glass.png", 
+                    "default_glass.png",
+                    "default_glass.png", 
+                    "default_glass.png",
+                    "default_glass.png",
+                    "default_glass.png" },
         spritediv = {x = 1, y = 1}, 
         initial_sprite_basepos = {x = 0, y = 0},
         is_visible = true, makes_footstep_sound = false, nametag_color = "black",
@@ -28,12 +28,6 @@ minetest.register_entity("cdmod:platform", {
             parent:set_rotation({x = rotation.x + math.rad(90), y = 0, z = 0})
             
 		end
-    end,
-    on_step = function(self, dtime) 
-        local objects = minetest.get_objects_inside_radius(self.object:get_pos(), 1)
-        for k, v in pairs(objects) do
-            print(k .. " " .. dump(v))
-        end
     end,
     -- make directory fall in air
 	--on_activate = function(self, staticdata, dtime_s) 
