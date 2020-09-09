@@ -51,7 +51,6 @@ minetest.register_node("cdmod:platform", {
                 local c = minetest.deserialize(node_meta:get_string("corner"))
                 local corner_info = minetest.get_meta({x = c.x, y = c.y, z = c.z})
                 local empty_string = corner_info:get_string("empty")
-                print(dump(minetest.deserialize(empty_string)))
                 delete_platform(c.x, c.y, c.z, c.s, c.o)
             end
 

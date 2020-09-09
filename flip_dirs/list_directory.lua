@@ -1,12 +1,4 @@
 list_directory = function(level, path, size)
-    local node = minetest.get_meta({x = 0,y = level, z = 0})
-    local free_slots_string = node:get_string("free_slots")
-    local free_slots = minetest.deserialize(free_slots_string)
-    fullpath = ""
-    if path == "." then fullpath = "./" else fullpath = path end
-    print("starting reading directory")
-    local root_dir = readdir(conn, fullpath)
-    if root_dir == nil then return end
     for n, file in pairs(root_dir) do
         local x, z = get_value(free_slots, size)
         local entity = nil

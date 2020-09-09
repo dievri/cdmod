@@ -13,13 +13,19 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/liblua5.1.so /usr/lib/x86_64-linux-gnu/liblu
 RUN make
 
 FROM ubuntu:latest
-RUN apt-get update && apt-get install -y software-properties-common
+#RUN apt-get update && apt-get install -y software-properties-common
 RUN echo "deb http://cz.archive.ubuntu.com/ubuntu groovy main universe" >> /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y minetest-server
-RUN apt-get install -y luarocks
+RUN apt-get update --fix-missing && DEBIAN_FRONTEND="noninteractive" apt-get install -y luarocks --no-install-recommends
+RUN apt-get install -y gcc --no-install-recommends
 RUN luarocks install luafilesystem
 RUN mkdir /users
 COPY --from=luadata /luadata/data.so /usr/local/lib/lua/5.1
+COPY ./hostlib/ /usr/share/lua/5.1/
+RUN luarocks install luasocket
+RUN apt-get --purge remove -y gcc
+RUN apt autoremove -y
+
 ENTRYPOINT ["/usr/lib/minetest/minetestserver"]
 
