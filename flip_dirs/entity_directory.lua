@@ -21,6 +21,7 @@ minetest.register_entity("cdmod:directory", {
     -- when hit with appropriate tool, create new platform for this directory
     on_punch = function(self, puncher, time_from_last_punch, tool_capabilities,
                         dir)
+        print(self.path)
         if tool_capabilities.damage_groups.enter == 1 then
             local pos = puncher:get_pos()
             -- find glass in radius of 6
@@ -29,6 +30,7 @@ minetest.register_entity("cdmod:directory", {
                              {x = node_pos.x, y = node_pos.y, z = node_pos.z})
             local corner = node:get_string("corner")
             local corner_pos = minetest.deserialize(corner)
+            local orientation = corner_pos.o
             local corner_node = minetest.get_meta(
                                     {
                     x = corner_pos.x,
@@ -53,14 +55,14 @@ minetest.register_entity("cdmod:directory", {
             if content ~= nil then size = table.getn(content) end
 
             local level = node_pos.y
-            local platform_size = math.ceil(math.sqrt((size / 80) * 100))
+            local platform_size = math.ceil(math.sqrt((size / 30) * 100))
             if platform_size < 3 then platform_size = 3 end
 
-            local posx = math.random(0, 12)
-            local posz = math.random(0, 12)
-            local new_level = level + 15
+            local posx = math.random(-15, 15)
+            local posz = math.random(-15, 15)
+            local new_level = level + math.random(0, 15)
             local result = create_platform(posx, new_level, posz, platform_size,
-                                           "h", content, host_info)
+                                           orientation, content, host_info)
 
             puncher:set_pos({
                 x = result.x + 1,
@@ -68,6 +70,21 @@ minetest.register_entity("cdmod:directory", {
                 z = result.z + 1
             })
 
+        end
+    end,
+
+    get_staticdata = function(self)
+        local attributes = self.object:get_nametag_attributes()
+        local data = {attr = attributes, path = self.path, size = self.size}
+        return minetest.serialize(data)
+    end,
+
+    on_activate = function(self, staticdata, dtime_s)
+        if staticdata ~= "" and staticdata ~= nil then
+            local data = minetest.deserialize(staticdata) or {}
+            self.object:set_nametag_attributes(data.attr)
+            self.path = data.path
+            self.size = data.size
         end
     end
 })

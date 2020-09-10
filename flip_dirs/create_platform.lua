@@ -1,8 +1,5 @@
 create_platform = function(posx, posy, posz, size, orientation, content,
                            host_info)
-    print("IN CREATE PLATFORM: " .. dump(content))
-    print("IN CREATE PLATFROM received initial positions:" .. posx .. " " ..
-              posy .. " " .. posz)
     local corner = {x = posx, y = posy, z = posz, s = size, o = orientation}
     local empty_nodes = {}
     local corner = minetest.serialize(corner)
@@ -61,12 +58,41 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                             {
                                 visual = "cube",
                                 textures = {
-                                    "cdmod_k8s.png", "cdmod_k8s.png",
-                                    "cdmod_k8s.png", "cdmod_k8s.png",
-                                    "cdmod_k8s.png", "cdmod_k8s.png"
+                                    "cdmod_k8s_pod.png", "cdmod_k8s_pod.png",
+                                    "cdmod_k8s_pod.png", "cdmod_k8s_pod.png",
+                                    "cdmod_k8s_pod.png", "cdmod_k8s_pod.png"
                                 }
                             })
                     end
+                    if string.match(file.path, "/pod/%a*[^/]*$") ~= nil then
+                        entity:set_properties(
+                            {
+                                visual = "sprite",
+                                textures = {"cdmod_k8s_pod.png"}
+                            })
+                    end
+
+                    if file.name == "deployments" then
+                        entity:set_properties(
+                            {
+                                visual = "cube",
+                                textures = {
+                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png"
+                                }
+           
+                            })
+                    end
+
+                    if string.match(file.path, "/deployments/%a*[^/]*$") ~= nil then
+                        entity:set_properties(
+                            {
+                                visual = "sprite",
+                                textures = {"cdmod_k8s_deploy.png"}
+                            })
+                    end
+
                 else
                     entity = minetest.add_entity(
                                  {
@@ -74,17 +100,49 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                             y = v.y,
                             z = math.random(posz + 3, posz + 11)
                         }, "cdmod:directory")
+
                     if file.name == "pod" then
                         entity:set_properties(
                             {
                                 visual = "cube",
                                 textures = {
-                                    "cdmod_k8s.png", "cdmod_k8s.png",
-                                    "cdmod_k8s.png", "cdmod_k8s.png",
-                                    "cdmod_k8s.png", "cdmod_k8s.png"
+                                    "cdmod_k8s_pod.png", "cdmod_k8s_pod.png",
+                                    "cdmod_k8s_pod.png", "cdmod_k8s_pod.png",
+                                    "cdmod_k8s_pod.png", "cdmod_k8s_pod.png"
                                 }
+             
                             })
                     end
+
+                    if string.match(file.path, "/pod/%a*[^/]*$") ~= nil then
+                        entity:set_properties(
+                            {
+                                visual = "sprite",
+                                textures = {"cdmod_k8s_pod.png"}
+                            })
+                    end
+
+                    if file.name == "deployments" then
+                        entity:set_properties(
+                            {
+                                visual = "cube",
+                                textures = {
+                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png"
+                                }
+           
+                            })
+                    end
+
+                    if string.match(file.path, "/deployments/%a*[^/]*$") ~= nil then
+                        entity:set_properties(
+                            {
+                                visual = "sprite",
+                                textures = {"cdmod_k8s_deploy.png"}
+                            })
+                    end
+
                 end
 
                 table.insert(full_slots, {x = v.x, y = v.y})
@@ -106,7 +164,6 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                 end
                 table.insert(full_slots, {x = v.x, y = v.y})
             end
-            print(entity)
             entity:set_nametag_attributes({color = "black", text = file.name})
             entity:set_armor_groups({immortal = 0})
             if orientation == "h" then
@@ -133,7 +190,6 @@ delete_platform = function(posx, posy, posz, size, orientation)
     local content = minetest.deserialize(content_string)
     local host_info_string = node_meta:get_string("host")
     local host_info = minetest.deserialize(host_info_string)
-    print(dump("IN DELETE PLATFORM: " .. content_string))
     local full_string = node_meta:get_string("full")
     local full = minetest.deserialize(full_string)
     if full ~= nil then

@@ -1,13 +1,8 @@
 minetest.register_on_player_receive_fields(
     function(player, formname, fields)
         if formname == "cdmod:connect" then
-            print("YOU ARE CONNECTIN TO K8S!!!")
-            print(dump(fields))
-            -- -- if no file name specified, return
             if (fields["conn_string"] == nil) then
-                --     return
             end
-
             local conn_string = fields["conn_string"]
             print(conn_string)
             local t = {}
