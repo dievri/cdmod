@@ -27,7 +27,7 @@ dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/entity_directory.lua")
 dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/entity_file.lua")
 dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/register_tools.lua")
 dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/list_directory.lua")
-
+dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/register_events.lua")
 dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/number_of_elements.lua")
 dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/create_platform.lua")
 dofile(minetest.get_modpath("cdmod") .. mode .. "_dirs/register_on_joinplayer.lua")

@@ -1,4 +1,4 @@
-read_directory = function(dir_path) 
+read_directory = function(conn, dir_path) 
     local root_dir = nil
     if dir_path == "." then 
         root_dir = readdir(conn, "./")

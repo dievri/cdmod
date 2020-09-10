@@ -1,36 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: minetest-deployment
-  labels:
-    app: minetest
+  name: minetest-server
+  namespace: myfirstnsp
 spec:
   selector:
     matchLabels:
-      app: minetest
+      app: minetest-server-label
   template:
     metadata:
       labels:
-        app: minetest
+        app: minetest-server-label
     spec:
       containers:
-      - name: minetest
-        image: docker.io/dievri/minetest:server
-        ports:
-        - containerPort: 30000
-          protocol: UDP
-        volumeMounts:
-        - name: settings
-          mountPath: /root/.minetest/minetest.conf
-        - name: mods
-          mountPath: /usr/share/games/minetest/games/minetest_game/mods
+        - name: minetest-server
+          image: docker.io/dievri/minetest:server
+          ports:
+            - name: mt-server-port
+              containerPort: 30000
+              protocol: UDP
+          volumeMounts:
+            - name: settings
+              mountPath: /root/.minetest/minetest.conf
+            - name: mods
+              mountPath: /usr/share/games/minetest/games/minetest_game/mods
       volumes:
         - name: settings
           hostPath:
-            path: /etc/minetest/minetest.conf
-            type: File
+                path: /data/minetest.conf
+                type: File
         - name: mods
           hostPath:
-            path: /usr/share/games/minetest/games/minetest_game/mods
-            type: Directory
-
+                path: /mods
+                type: Directory

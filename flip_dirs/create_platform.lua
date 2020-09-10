@@ -1,4 +1,4 @@
-create_platform = function(posx, posy, posz, size, orientation, content)
+create_platform = function(posx, posy, posz, size, orientation, content, host_info)
     print("IN CREATE PLATFORM: " ..dump(content))
     print("IN CREATE PLATFROM received initial positions:" .. posx .. " " .. posy .. " " .. posz)
     local corner = { x = posx, y = posy, z = posz, s = size, o = orientation }
@@ -84,7 +84,7 @@ create_platform = function(posx, posy, posz, size, orientation, content)
 
     local empty = minetest.serialize(shuffled)
         node:set_string("empty", empty)
-        
+        node:set_string("host", minetest.serialize(host_info))
         node:set_string("content", minetest.serialize(content))
         
     return minetest.deserialize(corner)
@@ -98,6 +98,8 @@ delete_platform = function(posx, posy, posz, size, orientation)
     local node_meta = minetest.get_meta({x = posx, y = posy, z = posz})
     local content_string = node_meta:get_string("content")
     local content = minetest.deserialize(content_string)
+    local host_info_string = node_meta:get_string("host")
+    local host_info = minetest.deserialize(host_info_string)
     print(dump("IN DELETE PLATFORM: " .. content_string))
     local full_string = node_meta:get_string("full")
     local full = minetest.deserialize(full_string)
@@ -155,6 +157,6 @@ delete_platform = function(posx, posy, posz, size, orientation)
     node:set_string("content", nil)
     node:set_string("full", nil)
   
-    create_platform(posx, posy, posz, size, new_orientation, content)
+    create_platform(posx, posy, posz, size, new_orientation, content, host_info)
 end
 

@@ -17,7 +17,7 @@ local root = minetest.add_entity({x = 3, y = 7, z = 3}, "cdmod:directory")
     inventory:add_item("main", "cdmod:flip")
     --inventory:add_item("main", "cdmod:read")	
 	inventory:add_item("main", "cdmod:enter")
-    --inventory:add_item("main", "cdmod:create")
+    inventory:add_item("main", "cdmod:connect")
 end)
 
 
@@ -38,7 +38,8 @@ end)
 --     -- end
 --         create_platform(0, 0, 0, 10, "h")
 --      end
-    create_platform(0, 0, 0, 7, "h")
+    local host_info = {type = "tcp", host = "instance1", port = 32000}
+    create_platform(0, 0, 0, 7, "h", nil, host_info)
 
       end
  end)

@@ -1,4 +1,4 @@
-function get_number_of_elements(path)
+function get_number_of_elements(conn, path)
     if path == "." then path = "./" end
     local root_dir = readdir(conn, path)
     print("counting number of elements")
