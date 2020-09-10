@@ -55,7 +55,7 @@ minetest.register_entity("cdmod:directory", {
             if content ~= nil then size = table.getn(content) end
 
             local level = node_pos.y
-            local platform_size = math.ceil(math.sqrt((size / 30) * 100))
+            local platform_size = math.ceil(math.sqrt((size / 15) * 100))
             if platform_size < 3 then platform_size = 3 end
 
             local posx = math.random(-15, 15)

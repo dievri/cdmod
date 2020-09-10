@@ -77,11 +77,14 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                             {
                                 visual = "cube",
                                 textures = {
-                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png",
-                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png",
-                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png"
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png"
                                 }
-           
+
                             })
                     end
 
@@ -110,7 +113,7 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                                     "cdmod_k8s_pod.png", "cdmod_k8s_pod.png",
                                     "cdmod_k8s_pod.png", "cdmod_k8s_pod.png"
                                 }
-             
+
                             })
                     end
 
@@ -127,11 +130,14 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                             {
                                 visual = "cube",
                                 textures = {
-                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png",
-                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png",
-                                    "cdmod_k8s_deploy.png", "cdmod_k8s_deploy.png"
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png",
+                                    "cdmod_k8s_deploy.png"
                                 }
-           
+
                             })
                     end
 
@@ -154,6 +160,25 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                             y = math.random(posy + 3, posy + 11),
                             z = v.y
                         }, "cdmod:file")
+
+                    if file.name == "yaml" then
+                        entity:set_properties(
+                            {visual = "sprite", textures = {"cdmod_yaml.png"}})
+                    end
+
+                    if file.name == "json" then
+                        entity:set_properties(
+                            {visual = "sprite", textures = {"cdmod_json.png"}})
+                    end
+                    if file.name == "logs" then
+                        entity:set_properties(
+                            {visual = "sprite", textures = {"cdmod_logs.png"}})
+                    end
+                    if file.name == "describe" then
+                        entity:set_properties(
+                            {visual = "sprite", textures = {"cdmod_describe.png"}})
+                    end
+
                 else
                     entity = minetest.add_entity(
                                  {
@@ -161,6 +186,23 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                             y = v.y,
                             z = math.random(posz + 3, posz + 11)
                         }, "cdmod:file")
+
+                    if file.name == "yaml" then
+                        entity:set_properties(
+                            {visual = "sprite", textures = {"cdmod_yaml.png"}})
+                    end
+                    if file.name == "json" then
+                        entity:set_properties(
+                            {visual = "sprite", textures = {"cdmod_json.png"}})
+                    end
+                    if file.name == "logs" then
+                        entity:set_properties(
+                            {visual = "sprite", textures = {"cdmod_logs.png"}})
+                    end
+                    if file.name == "describe" then
+                        entity:set_properties(
+                            {visual = "sprite", textures = {"cdmod_describe.png"}})
+                    end
                 end
                 table.insert(full_slots, {x = v.x, y = v.y})
             end
@@ -253,5 +295,74 @@ delete_platform = function(posx, posy, posz, size, orientation)
     node:set_string("full", nil)
 
     create_platform(posx, posy, posz, size, new_orientation, content, host_info)
+end
+
+wipe_platform = function(posx, posy, posz, size, orientation)
+    local node_meta = minetest.get_meta({x = posx, y = posy, z = posz})
+    local content_string = node_meta:get_string("content")
+    local content = minetest.deserialize(content_string)
+    local host_info_string = node_meta:get_string("host")
+    local host_info = minetest.deserialize(host_info_string)
+    local full_string = node_meta:get_string("full")
+    local full = minetest.deserialize(full_string)
+    if full ~= nil then
+        for k, v in pairs(full) do
+            local objects = nil
+            if orientation == "h" then
+                objects = minetest.get_objects_inside_radius(
+                              {x = v.x, y = posy, z = v.y}, 2)
+            else
+                objects = minetest.get_objects_inside_radius(
+                              {x = v.x, y = v.y, z = posz}, 2)
+            end
+            while next(objects) ~= nil do
+                local k, v = next(objects)
+                v:remove()
+                table.remove(objects, k)
+            end
+        end
+    end
+
+    local corner = {x = posx, y = posy, z = posz, s = size, o = orientation}
+    local empty_nodes = {}
+    local corner = minetest.serialize(corner)
+    local first_dimension, second_dimension = 0
+    local new_orientation = nil
+    if orientation == "h" then
+        new_orientation = "v"
+        first_dimension = posx
+        second_dimension = posz
+    else
+        new_orientation = "h"
+        first_dimension = posx
+        second_dimension = posy
+    end
+
+    local first_end = first_dimension + size
+    local second_end = second_dimension + size
+
+    for first = first_dimension, first_end do
+        for second = second_dimension, second_end do
+            table.insert(empty_nodes, {x = first, y = second})
+            if orientation == "h" then
+                minetest.set_node({x = first, y = posy, z = second},
+                                  {name = "air"})
+                local node =
+                    minetest.get_meta({x = first, y = posy, z = second})
+                node:set_string("corner", nil)
+            else
+                minetest.set_node({x = first, y = second, z = posz},
+                                  {name = "air"})
+                local node =
+                    minetest.get_meta({x = first, y = second, z = posz})
+                node:set_string("corner", nil)
+            end
+        end
+    end
+
+    local node = minetest.get_meta({x = posx, y = posy, z = posz})
+    node:set_string("empty", nil)
+    node:set_string("content", nil)
+    node:set_string("full", nil)
 end
 

@@ -22,6 +22,14 @@ minetest.register_node("cdmod:platform", {
             local empty_string = corner_info:get_string("empty")
             delete_platform(c.x, c.y, c.z, c.s, c.o)
         end
+        if capabilities.damage_groups.wipe == 1 then
+            -- local wielded_item = inventory.get_wielded_item()
+            local node_meta = minetest.get_meta(pos)
+            local c = minetest.deserialize(node_meta:get_string("corner"))
+            local corner_info = minetest.get_meta({x = c.x, y = c.y, z = c.z})
+            local empty_string = corner_info:get_string("empty")
+            wipe_platform(c.x, c.y, c.z, c.s, c.o)
+        end
     end
 })
 

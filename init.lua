@@ -3,7 +3,7 @@ np = require '9p'
 socket = require 'socket'
 pprint = require 'pprint'
 readdir = require 'readdir'
-local path = minetest.get_modpath("cdmod") .. "/flip_dirs/
+local path = minetest.get_modpath("cdmod") .. "/flip_dirs/"
 dofile(path .. "entity_directory.lua")
 dofile(path .. "entity_file.lua")
 dofile(path .. "node_platform.lua")

@@ -12,6 +12,7 @@ minetest.register_on_joinplayer(function(player)
     inventory:add_item("main", "cdmod:flip")
     inventory:add_item("main", "cdmod:enter")
     inventory:add_item("main", "cdmod:connect")
+    inventory:add_item("main", "cdmod:wipe")
 end)
 
 minetest.register_on_generated(function(minp, maxp, blockseed)
