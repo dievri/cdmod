@@ -2,16 +2,19 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                            host_info, parent_center)
     local new_center = nil
     if orientation == "v" then
-        -- on X: x = posx + size on Y: y = posy + size
-        -- 
-        
-        new_center = {x = (posx + (posx + size)) / 2, y = (posy + (posy + size)) / 2, z = posz}
+        new_center = {
+            x = (posx + (posx + size)) / 2,
+            y = (posy + (posy + size)) / 2,
+            z = posz
+        }
 
     else
-        new_center = {x = (posx + (posx + size)) / 2, y = posy, z = (posz + (posz + size)) / 2}
+        new_center = {
+            x = (posx + (posx + size)) / 2,
+            y = posy,
+            z = (posz + (posz + size)) / 2
+        }
     end
-    print("Net CENTER")
-    print(dump(new_center))
     local corner = {x = posx, y = posy, z = posz, s = size, o = orientation}
     local empty_nodes = {}
     local corner = minetest.serialize(corner)

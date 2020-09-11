@@ -37,7 +37,7 @@ minetest.register_entity("cdmod:directory", {
                     y = corner_pos.y,
                     z = corner_pos.z
                 })
-           
+
             local cs = corner_node:get_string("new_center")
             print("dumping cs")
             print(dump(cs))
@@ -47,7 +47,6 @@ minetest.register_entity("cdmod:directory", {
             local cp = {x = c.x, y = c.y, z = c.z}
             local size = corner_pos.s
             local orientation = corner_pos.o
-                
 
             local host_info_string = corner_node:get_string("host")
             local host_info = minetest.deserialize(host_info_string)
@@ -60,7 +59,30 @@ minetest.register_entity("cdmod:directory", {
                 error("Connection error")
             end
             local conn = np.attach(tcp, "dievri", "")
+            print("dump path")
+            print(self.path)
+            print("dump connection")
+            print(conn)
             local content = read_directory(conn, self.path)
+            print("dump folder content")
+            print(dump(content))
+
+            local vizpath = self.path .. "/.viz"
+            print(vizpath)
+            local f = conn:newfid()
+            if pcall(np.walk, conn, conn.rootfid, f, vizpath) ==
+                false then
+                print("no vertical file")
+            else
+                conn:open(f, 2)
+                local statistics = conn:stat(f)
+                local buf = conn:read(f, 0, statistics.length - 1)
+                if tostring(buf) == "vertical" then
+                    orientation = "v"
+                end
+                conn:clunk(f)
+            end
+
             tcp:close()
             local size = 1
             if content ~= nil then size = table.getn(content) end

@@ -17,7 +17,7 @@ end)
 
 minetest.register_on_generated(function(minp, maxp, blockseed)
     if minp.x < 0 and minp.y < 0 and minp.z < 0 then
-        local host_info = {type = "tcp", host = "172.17.0.3", port = 32000}
+        local host_info = {type = "tcp", host = "172.17.0.2", port = 32000}
         create_platform(0, 0, 0, 7, "h", nil, host_info, nil)
 
     end
