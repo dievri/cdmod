@@ -30,17 +30,28 @@ minetest.register_entity("cdmod:directory", {
                              {x = node_pos.x, y = node_pos.y, z = node_pos.z})
             local corner = node:get_string("corner")
             local corner_pos = minetest.deserialize(corner)
-            local orientation = corner_pos.o
+
             local corner_node = minetest.get_meta(
                                     {
                     x = corner_pos.x,
                     y = corner_pos.y,
                     z = corner_pos.z
                 })
+           
+            local cs = corner_node:get_string("new_center")
+            print("dumping cs")
+            print(dump(cs))
+            local c = minetest.deserialize(cs)
+            print("dumping c")
+            print(dump(c))
+            local cp = {x = c.x, y = c.y, z = c.z}
+            local size = corner_pos.s
+            local orientation = corner_pos.o
+                
+
             local host_info_string = corner_node:get_string("host")
             local host_info = minetest.deserialize(host_info_string)
 
-            -- connect TODO
             local tcp = socket:tcp()
             local connection, err = tcp:connect(host_info["host"],
                                                 host_info["port"])
@@ -58,11 +69,11 @@ minetest.register_entity("cdmod:directory", {
             local platform_size = math.ceil(math.sqrt((size / 15) * 100))
             if platform_size < 3 then platform_size = 3 end
 
-            local posx = math.random(-15, 15)
-            local posz = math.random(-15, 15)
-            local new_level = level + math.random(0, 15)
+            local posx = math.random(-20, 20)
+            local posz = math.random(-20, 20)
+            local new_level = level + math.random(10, 20)
             local result = create_platform(posx, new_level, posz, platform_size,
-                                           orientation, content, host_info)
+                                           orientation, content, host_info, cp)
 
             puncher:set_pos({
                 x = result.x + 1,

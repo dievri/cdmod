@@ -3,7 +3,8 @@ read_directory = function(conn, dir_path)
     if dir_path == "." then 
         root_dir = readdir(conn, "./")
     else
-        root_dir = readdir(conn, dir_path)
+        result, root_dir = pcall(readdir, conn, dir_path)
+        if not result then return nil end
     end
     if root_dir == nil then return end
     local folder_content = {}

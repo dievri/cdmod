@@ -1,5 +1,17 @@
 create_platform = function(posx, posy, posz, size, orientation, content,
-                           host_info)
+                           host_info, parent_center)
+    local new_center = nil
+    if orientation == "v" then
+        -- on X: x = posx + size on Y: y = posy + size
+        -- 
+        
+        new_center = {x = (posx + (posx + size)) / 2, y = (posy + (posy + size)) / 2, z = posz}
+
+    else
+        new_center = {x = (posx + (posx + size)) / 2, y = posy, z = (posz + (posz + size)) / 2}
+    end
+    print("Net CENTER")
+    print(dump(new_center))
     local corner = {x = posx, y = posy, z = posz, s = size, o = orientation}
     local empty_nodes = {}
     local corner = minetest.serialize(corner)
@@ -176,7 +188,10 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                     end
                     if file.name == "describe" then
                         entity:set_properties(
-                            {visual = "sprite", textures = {"cdmod_describe.png"}})
+                            {
+                                visual = "sprite",
+                                textures = {"cdmod_describe.png"}
+                            })
                     end
 
                 else
@@ -201,7 +216,10 @@ create_platform = function(posx, posy, posz, size, orientation, content,
                     end
                     if file.name == "describe" then
                         entity:set_properties(
-                            {visual = "sprite", textures = {"cdmod_describe.png"}})
+                            {
+                                visual = "sprite",
+                                textures = {"cdmod_describe.png"}
+                            })
                     end
                 end
                 table.insert(full_slots, {x = v.x, y = v.y})
@@ -223,6 +241,8 @@ create_platform = function(posx, posy, posz, size, orientation, content,
     node:set_string("empty", empty)
     node:set_string("host", minetest.serialize(host_info))
     node:set_string("content", minetest.serialize(content))
+    node:set_string("new_center", minetest.serialize(new_center))
+    if parent_center ~= nil then connect(parent_center, new_center) end
     return minetest.deserialize(corner)
 end
 
